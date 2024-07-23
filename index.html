@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Hitungan Penjualan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            box-sizing: border-box;
+            gap: 20px;
+            flex-direction: column;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .header img {
+            max-width: 150px; /* Sesuaikan ukuran logo */
+            margin-top: 10px;
+        }
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+        .form-container, .results-container {
+            flex: 1;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .results {
+            margin-top: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .results div {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .add-button {
+            margin-top: 10px;
+            background-color: #007bff;
+        }
+        .add-button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .additional-app, .cancellation-note {
+            margin-top: 10px;
+        }
+        .additional-app input, .cancellation-note input, .cancellation-note textarea {
+            display: block;
+            margin-top: 5px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            .main-content {
+                flex-direction: column;
+            }
+            .form-container, .results-container {
+                width: 100%;
+            }
+            input[type="text"], input[type="number"], select {
+                padding: 8px;
+            }
+            button {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SHIFT BALANCE SYSTEM</h1>
+            <img src="logo.png" alt="Logo Toko"> <!-- Ganti 'logo.png' dengan path logo Anda -->
+            <!-- <h1>HARMANS GROUP</h1> -->
+        </div>
+        <div class="main-content">
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="adminName">Nama Admin:</label>
+                    <input type="text" id="adminName" name="adminName" required>
+                </div>
+                <div class="form-group">
+                    <label for="currentDateTime">Tanggal dan Jam:</label>
+                    <input type="text" id="currentDateTime" readonly>
+                </div>
+                <form id="salesForm">
+                    <div class="form-group">
+                        <label for="initialCapital">Uang Modal:</label>
+                        <input type="number" id="initialCapital" name="initialCapital" required>
+                    </div>
+                    <div class="form-group" id="appBalancesContainer">
+                        <label for="appType">Jenis Aplikasi:</label>
+                        <select id="appType" name="appType">
+                            <option value="">Pilih Aplikasi (Opsional)</option>
+                            <option value="totaltransaksi">Total Transaksi</option>
+                            <option value="uangadmin">Uang Admin</option>
+                            <option value="tariktunai">Tarik Tunai</option>
+                            <option value="voucher">Voucher</option>
+                            <option value="sisasetor">Sisa Setor</option>
+                            <option value="bca">BCA</option>
+                            <option value="mitra">Mitra</option>
+                            <option value="putra">Putra</option>
+                            <option value="digipos">Digipos</option>
+                            <option value="klikoo">Klikoo</option>
+                            <option value="dana">Dana</option>
+                            <option value="lainnya">Lainnya</option> <!-- Opsi untuk variabel baru -->
+                            <option value="pembatalan">Pembatalan</option> <!-- Opsi untuk pembatalan -->
+                        </select>
+                        <div class="additional-app" id="additionalAppContainer" style="display: none;">
+                            <label for="newAppName">Nama Aplikasi Baru:</label>
+                            <input type="text" id="newAppName" name="newAppName" placeholder="Masukkan nama aplikasi baru">
+                        </div>
+                        <div class="cancellation-note" id="cancellationNoteContainer" style="display: none;">
+                            <label for="cancellationNote">Catatan Pembatalan:</label>
+                            <textarea id="cancellationNote" name="cancellationNote" placeholder="Masukkan catatan pembatalan"></textarea>
+                        </div>
+                        <label for="appBalance">Saldo Aplikasi:</label>
+                        <input type="number" id="appBalance" name="appBalance">
+                        <button type="button" class="add-button" id="addAppBalance">Tambah Aplikasi</button>
+                    </div>
+                    <button type="submit">Hitung</button>
+                </form>
+                <table id="appBalancesTable">
+                    <thead>
+                        <tr>
+                            <th>Jenis Aplikasi</th>
+                            <th>Saldo Aplikasi</th>
+                            <th>Catatan</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="results-container">
+                <div class="results" id="results">
+                    <div>Nama Admin: <span id="displayAdminName"></span></div>
+                    <div>Total Saldo Semua Aplikasi: <span id="totalAppBalance">Rp 0</span></div>
+                    <div>Uang Modal yang Harus Dikembalikan: <span id="returnedCapital">Rp 0</span></div>
+                    <div>Uang Real yang Ada: <span id="realMoney">Rp 0</span></div>
+                    <div>Uang Penjualan: <span id="salesMoney">Rp 0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatRupiah(value) {
+            if (isNaN(value)) return 'Rp 0';
+            const numberString = Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return `Rp ${numberString}`;
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeString = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
+            document.getElementById('currentDateTime').value = dateTimeString;
+        }
+
+        setInterval(updateDateTime, 1000); // Update date and time every second
+
+        let appBalances = [];
+
+        document.getElementById('appType').addEventListener('change', function() {
+            let appType = document.getElementById('appType').value;
+            if (appType === 'lainnya') {
+                document.getElementById('additionalAppContainer').style.display = 'block';
+                document.getElementById('cancellationNoteContainer').style.display = 'none';
+            } else if (appType === 'pembatalan') {
+                document.getElementById('additionalAppContainer').style.display = 'none';
+                document.getElementById('cancellationNoteContainer').style.display = 'block';
+            } else {
+                document.getElementById('additionalAppContainer').style.display = 'none';
+                document.getElementById('cancellationNoteContainer').style.display = 'none';
+            }
+        });
+
+        document.getElementById('addAppBalance').addEventListener('click', function() {
+            let appType = document.getElementById('appType').value;
+            let appBalance = parseFloat(document.getElementById('appBalance').value);
+            let newAppName = document.getElementById('newAppName').value;
+            let cancellationNote = document.getElementById('cancellationNote').value;
+
+            if (appType === 'lainnya' && newAppName) {
+                appType = newAppName; // Use the new application name
+            } else if (appType === 'pembatalan' && cancellationNote) {
+                appType = `${appType}: ${cancellationNote}`; // Append note to application type
+            }
+
+            if (appType && !isNaN(appBalance)) {
+                appBalances.push({ type: appType, balance: appBalance });
+
+                // Reset the form fields
+                document.getElementById('appType').value = '';
+                document.getElementById('appBalance').value = '';
+                document.getElementById('newAppName').value = '';
+                document.getElementById('cancellationNote').value = '';
+                document.getElementById('additionalAppContainer').style.display = 'none';
+                document.getElementById('cancellationNoteContainer').style.display = 'none';
+
+                // Display the selected app balance
+                displayAppBalances();
+            }
+        });
+
+        function displayAppBalances() {
+            const tbody = document.getElementById('appBalancesTable').querySelector('tbody');
+            tbody.innerHTML = ''; // Clear existing rows
+            
+            appBalances.forEach(app => {
+                const row = document.createElement('tr');
+                const cellType = document.createElement('td');
+                const cellBalance = document.createElement('td');
+                const cellNote = document.createElement('td');
+
+                cellType.textContent = app.type.toUpperCase();
+                cellBalance.textContent = formatRupiah(app.balance);
+                cellNote.textContent = app.type.includes('pembatalan:') ? app.type.split(': ')[1] : '';
+
+                row.appendChild(cellType);
+                row.appendChild(cellBalance);
+                row.appendChild(cellNote);
+                tbody.appendChild(row);
+            });
+        }
+
+        document.getElementById('salesForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let adminName = document.getElementById('adminName').value;
+            let initialCapital = parseFloat(document.getElementById('initialCapital').value);
+            let totalTransactions = appBalances.find(app => app.type === 'totaltransaksi')?.balance || 0;
+            let adminFee = appBalances.find(app => app.type === 'uangadmin')?.balance || 0;
+            let withdrawal = appBalances.find(app => app.type === 'tariktunai')?.balance || 0;
+            let voucher = appBalances.find(app => app.type === 'voucher')?.balance || 0;
+            let remainingDeposit = appBalances.find(app => app.type === 'sisasetor')?.balance || 0;
+
+            let appBalancesMap = appBalances.reduce((acc, app) => {
+                if (['bca', 'mitra', 'putra', 'digipos', 'klikoo', 'dana'].includes(app.type)) {
+                    acc[app.type] = (acc[app.type] || 0) + app.balance;
+                }
+                return acc;
+            }, {});
+
+            let totalAppBalance = Object.values(appBalancesMap).reduce((total, balance) => total + balance, 0);
+            let finalBalance = totalTransactions + adminFee - withdrawal;
+            let returnedCapital = initialCapital - totalAppBalance;
+            let salesMoney = finalBalance + voucher - returnedCapital + remainingDeposit;
+
+            document.getElementById('displayAdminName').textContent = adminName;
+            document.getElementById('totalAppBalance').textContent = formatRupiah(totalAppBalance);
+            document.getElementById('returnedCapital').textContent = formatRupiah(returnedCapital);
+            document.getElementById('realMoney').textContent = formatRupiah(finalBalance);
+            document.getElementById('salesMoney').textContent = formatRupiah(salesMoney);
+        });
+
+        updateDateTime(); // Initialize date and time
+    </script>
+</body>
+</html>
