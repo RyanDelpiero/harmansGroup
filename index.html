@@ -136,8 +136,7 @@
     <div class="container">
         <div class="header">
             <h1>SHIFT BALANCE SYSTEM</h1>
-            <img src="logo.png" alt="Logo Toko"> <!-- Ganti 'logo.png' dengan path logo Anda -->
-            <!-- <h1>HARMANS GROUP</h1> -->
+            <img src="logo.png" alt="Logo Toko">
         </div>
         <div class="main-content">
             <div class="form-container">
@@ -169,8 +168,10 @@
                             <option value="digipos">Digipos</option>
                             <option value="klikoo">Klikoo</option>
                             <option value="dana">Dana</option>
-                            <option value="lainnya">Lainnya</option> <!-- Opsi untuk variabel baru -->
-                            <option value="pembatalan">Pembatalan</option> <!-- Opsi untuk pembatalan -->
+                            <option value="setortunai">Setor Tunai</option>
+                            <option value="uangreal">Uang Real</option>
+                            <option value="lainnya">Lainnya</option>
+                            <option value="pembatalan">Pembatalan</option>
                         </select>
                         <div class="additional-app" id="additionalAppContainer" style="display: none;">
                             <label for="newAppName">Nama Aplikasi Baru:</label>
@@ -192,6 +193,7 @@
                             <th>Jenis Aplikasi</th>
                             <th>Saldo Aplikasi</th>
                             <th>Catatan</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -200,10 +202,12 @@
             <div class="results-container">
                 <div class="results" id="results">
                     <div>Nama Admin: <span id="displayAdminName"></span></div>
-                    <div>Total Saldo Semua Aplikasi: <span id="totalAppBalance">Rp 0</span></div>
+                    <div>Modal Saldo: <span id="initialCapitalBalance">Rp 0</span></div>
                     <div>Uang Modal yang Harus Dikembalikan: <span id="returnedCapital">Rp 0</span></div>
-                    <div>Uang Real yang Ada: <span id="realMoney">Rp 0</span></div>
+                    <div>Total Saldo Semua Aplikasi: <span id="totalAppBalance">Rp 0</span></div>
+                    <div>Total Saldo Transaksi Aplikasi: <span id="transactionApps">Rp 0</span></div>
                     <div>Uang Penjualan: <span id="salesMoney">Rp 0</span></div>
+                    <div>Uang Real: <span id="finalRealMoney">Rp 0</span></div>
                 </div>
             </div>
         </div>
@@ -222,18 +226,18 @@
             document.getElementById('currentDateTime').value = dateTimeString;
         }
 
-        setInterval(updateDateTime, 1000); // Update date and time every second
+        setInterval(updateDateTime, 1000);
 
         let appBalances = [];
 
         document.getElementById('appType').addEventListener('change', function() {
-            let appType = document.getElementById('appType').value;
+            const appType = this.value;
             if (appType === 'lainnya') {
                 document.getElementById('additionalAppContainer').style.display = 'block';
                 document.getElementById('cancellationNoteContainer').style.display = 'none';
             } else if (appType === 'pembatalan') {
-                document.getElementById('additionalAppContainer').style.display = 'none';
                 document.getElementById('cancellationNoteContainer').style.display = 'block';
+                document.getElementById('additionalAppContainer').style.display = 'none';
             } else {
                 document.getElementById('additionalAppContainer').style.display = 'none';
                 document.getElementById('cancellationNoteContainer').style.display = 'none';
@@ -241,85 +245,115 @@
         });
 
         document.getElementById('addAppBalance').addEventListener('click', function() {
-            let appType = document.getElementById('appType').value;
-            let appBalance = parseFloat(document.getElementById('appBalance').value);
-            let newAppName = document.getElementById('newAppName').value;
-            let cancellationNote = document.getElementById('cancellationNote').value;
+            const appType = document.getElementById('appType').value;
+            const appBalance = parseFloat(document.getElementById('appBalance').value);
+            let appName = appType;
+            let note = '';
 
-            if (appType === 'lainnya' && newAppName) {
-                appType = newAppName; // Use the new application name
-            } else if (appType === 'pembatalan' && cancellationNote) {
-                appType = `${appType}: ${cancellationNote}`; // Append note to application type
+            if (appType === 'lainnya') {
+                appName = document.getElementById('newAppName').value;
+                if (!appName) {
+                    alert('Silakan masukkan nama aplikasi baru.');
+                    return;
+                }
+            } else if (appType === 'pembatalan') {
+                note = document.getElementById('cancellationNote').value;
+                if (!note) {
+                    alert('Silakan masukkan catatan pembatalan.');
+                    return;
+                }
             }
 
-            if (appType && !isNaN(appBalance)) {
-                appBalances.push({ type: appType, balance: appBalance });
-
-                // Reset the form fields
-                document.getElementById('appType').value = '';
-                document.getElementById('appBalance').value = '';
-                document.getElementById('newAppName').value = '';
-                document.getElementById('cancellationNote').value = '';
-                document.getElementById('additionalAppContainer').style.display = 'none';
-                document.getElementById('cancellationNoteContainer').style.display = 'none';
-
-                // Display the selected app balance
-                displayAppBalances();
+            if (isNaN(appBalance)) {
+                alert('Silakan masukkan saldo aplikasi yang valid.');
+                return;
             }
+
+            appBalances.push({ appType: appName, balance: appBalance, note: note });
+            updateAppBalancesTable();
+            document.getElementById('appBalance').value = '';
+            document.getElementById('newAppName').value = '';
+            document.getElementById('cancellationNote').value = '';
         });
 
-        function displayAppBalances() {
-            const tbody = document.getElementById('appBalancesTable').querySelector('tbody');
-            tbody.innerHTML = ''; // Clear existing rows
-            
-            appBalances.forEach(app => {
-                const row = document.createElement('tr');
-                const cellType = document.createElement('td');
-                const cellBalance = document.createElement('td');
-                const cellNote = document.createElement('td');
-
-                cellType.textContent = app.type.toUpperCase();
-                cellBalance.textContent = formatRupiah(app.balance);
-                cellNote.textContent = app.type.includes('pembatalan:') ? app.type.split(': ')[1] : '';
-
-                row.appendChild(cellType);
-                row.appendChild(cellBalance);
-                row.appendChild(cellNote);
-                tbody.appendChild(row);
+        function updateAppBalancesTable() {
+            const tbody = document.querySelector('#appBalancesTable tbody');
+            tbody.innerHTML = '';
+            appBalances.forEach((app, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${app.appType}</td>
+                    <td>${formatRupiah(app.balance)}</td>
+                    <td>${app.note}</td>
+                    <td><button type="button" onclick="editAppBalance(${index})">Edit</button></td>
+                `;
+                tbody.appendChild(tr);
             });
         }
 
-        document.getElementById('salesForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+        function editAppBalance(index) {
+            const app = appBalances[index];
+            document.getElementById('appType').value = app.appType;
+            document.getElementById('appBalance').value = app.balance;
+            if (app.appType === 'lainnya') {
+                document.getElementById('newAppName').value = app.appType;
+                document.getElementById('additionalAppContainer').style.display = 'block';
+            } else if (app.appType === 'pembatalan') {
+                document.getElementById('cancellationNote').value = app.note;
+                document.getElementById('cancellationNoteContainer').style.display = 'block';
+            }
+            appBalances.splice(index, 1);
+            updateAppBalancesTable();
+        }
 
-            let adminName = document.getElementById('adminName').value;
-            let initialCapital = parseFloat(document.getElementById('initialCapital').value);
-            let totalTransactions = appBalances.find(app => app.type === 'totaltransaksi')?.balance || 0;
-            let adminFee = appBalances.find(app => app.type === 'uangadmin')?.balance || 0;
-            let withdrawal = appBalances.find(app => app.type === 'tariktunai')?.balance || 0;
-            let voucher = appBalances.find(app => app.type === 'voucher')?.balance || 0;
-            let remainingDeposit = appBalances.find(app => app.type === 'sisasetor')?.balance || 0;
+        document.getElementById('salesForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const adminName = document.getElementById('adminName').value;
+            const initialCapital = parseFloat(document.getElementById('initialCapital').value);
+            let totalAppBalance = 0;
+            let totalTransaksi = 0;
+            let uangAdmin = 0;
+            let tarikTunai = 0;
+            let setorTunai = 0;
+            let voucher = 0;
+            let sisasetor = 0;
+            let uangReal = 0;
 
-            let appBalancesMap = appBalances.reduce((acc, app) => {
-                if (['bca', 'mitra', 'putra', 'digipos', 'klikoo', 'dana'].includes(app.type)) {
-                    acc[app.type] = (acc[app.type] || 0) + app.balance;
+            appBalances.forEach(app => {
+                if (app.appType === 'bca' || app.appType === 'mitra' || app.appType === 'putra' || app.appType === 'digipos' || app.appType === 'klikoo' || app.appType === 'dana') {
+                    totalAppBalance += app.balance;
+                } else if (app.appType === 'totaltransaksi') {
+                    totalTransaksi = app.balance;
+                } else if (app.appType === 'uangadmin') {
+                    uangAdmin = app.balance;
+                } else if (app.appType === 'tariktunai') {
+                    tarikTunai = app.balance;
+                } else if (app.appType === 'setortunai') {
+                    setorTunai = app.balance;
+                } else if (app.appType === 'voucher') {
+                    voucher = app.balance;
+                } else if (app.appType === 'sisasetor') {
+                    sisasetor = app.balance;
+                } else if (app.appType === 'uangreal') {
+                    uangReal = app.balance;
                 }
-                return acc;
-            }, {});
+            });
 
-            let totalAppBalance = Object.values(appBalancesMap).reduce((total, balance) => total + balance, 0);
-            let finalBalance = totalTransactions + adminFee - withdrawal;
-            let returnedCapital = initialCapital - totalAppBalance;
-            let salesMoney = finalBalance + voucher - returnedCapital + remainingDeposit;
+            const uangModalDikembalikan = initialCapital - totalAppBalance;
+            const uangTransaksiAplikasi = totalTransaksi + uangAdmin - tarikTunai - setorTunai;
+            const uangPenjualan = uangTransaksiAplikasi + sisasetor + voucher - uangModalDikembalikan;
+            const finalRealMoney = uangReal - uangPenjualan;
 
-            document.getElementById('displayAdminName').textContent = adminName;
-            document.getElementById('totalAppBalance').textContent = formatRupiah(totalAppBalance);
-            document.getElementById('returnedCapital').textContent = formatRupiah(returnedCapital);
-            document.getElementById('realMoney').textContent = formatRupiah(finalBalance);
-            document.getElementById('salesMoney').textContent = formatRupiah(salesMoney);
+            document.getElementById('displayAdminName').innerText = adminName;
+            document.getElementById('totalAppBalance').innerText = formatRupiah(totalAppBalance);
+            document.getElementById('transactionApps').innerText = formatRupiah(uangTransaksiAplikasi);
+            document.getElementById('returnedCapital').innerText = formatRupiah(uangModalDikembalikan);
+            document.getElementById('initialCapitalBalance').innerText = formatRupiah(initialCapital);
+            document.getElementById('salesMoney').innerText = formatRupiah(uangPenjualan);
+            document.getElementById('finalRealMoney').innerText = formatRupiah(finalRealMoney);
         });
 
-        updateDateTime(); // Initialize date and time
+        updateDateTime();
     </script>
 </body>
 </html>
