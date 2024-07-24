@@ -129,6 +129,25 @@
             button {
                 padding: 8px;
             }
+            .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .header button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #dc3545;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .header button:hover {
+            background-color: #c82333;
+        }
         }
     </style>
 </head>
@@ -226,6 +245,10 @@
             const now = new Date();
             const dateTimeString = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
             document.getElementById('currentDateTime').value = dateTimeString;
+        }
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            window.location.href = 'login.html';
         }
         function checkLogin() {
             if (!localStorage.getItem('loggedIn')) {
