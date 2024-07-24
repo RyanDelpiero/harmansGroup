@@ -373,7 +373,7 @@
             const uangModalDikembalikan = initialCapital - totalAppBalance;
             const uangTransaksiAplikasi = totalTransaksi + uangAdmin - tarikTunai - setorTunai;
             const uangPenjualan = uangTransaksiAplikasi + sisasetor + voucher - uangModalDikembalikan;
-            const finalRealMoney = uangReal - uangPenjualan;
+            const finalRealMoney = uangReal;
 
             document.getElementById('displayAdminName').innerText = adminName;
             document.getElementById('totalAppBalance').innerText = formatRupiah(totalAppBalance);
