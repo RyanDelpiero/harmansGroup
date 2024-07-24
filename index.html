@@ -180,7 +180,7 @@
                             <option value="totaltransaksi">Total Transaksi</option>
                             <option value="uangadmin">Uang Admin</option>
                             <option value="tariktunai">Tarik Tunai</option>
-                            <option value="voucher">Voucher</option>
+                            <option value="saldoterpakai">Saldo terpakai</option>
                             <option value="sisasetor">Sisa Setor</option>
                             <option value="bca">BCA</option>
                             <option value="mitra">Mitra</option>
@@ -346,7 +346,7 @@
             let uangAdmin = 0;
             let tarikTunai = 0;
             let setorTunai = 0;
-            let voucher = 0;
+            let saldoTerpakai = 0;
             let sisasetor = 0;
             let uangReal = 0;
 
@@ -361,8 +361,8 @@
                     tarikTunai = app.balance;
                 } else if (app.appType === 'setortunai') {
                     setorTunai = app.balance;
-                } else if (app.appType === 'voucher') {
-                    voucher = app.balance;
+                } else if (app.appType === 'saldoTerpakai') {
+                    saldoTerpakai = app.balance;
                 } else if (app.appType === 'sisasetor') {
                     sisasetor = app.balance;
                 } else if (app.appType === 'uangreal') {
@@ -372,7 +372,7 @@
 
             const uangModalDikembalikan = initialCapital - totalAppBalance;
             const uangTransaksiAplikasi = totalTransaksi + uangAdmin - tarikTunai - setorTunai;
-            const uangPenjualan = uangTransaksiAplikasi + sisasetor + voucher - uangModalDikembalikan;
+            const uangPenjualan = uangTransaksiAplikasi + sisasetor + saldoTerpakai - uangModalDikembalikan;
             const finalRealMoney = uangReal;
 
             document.getElementById('displayAdminName').innerText = adminName;
