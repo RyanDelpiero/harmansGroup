@@ -137,6 +137,7 @@
         <div class="header">
             <h1>SHIFT BALANCE SYSTEM</h1>
             <img src="logo.png" alt="Logo Toko">
+            <button onclick="logout()">Logout</button>
         </div>
         <div class="main-content">
             <div class="form-container">
@@ -202,6 +203,7 @@
             <div class="results-container">
                 <div class="results" id="results">
                     <div>Nama Admin: <span id="displayAdminName"></span></div>
+                    <br></br>
                     <div>Modal Saldo: <span id="initialCapitalBalance">Rp 0</span></div>
                     <div>Uang Modal yang Harus Dikembalikan: <span id="returnedCapital">Rp 0</span></div>
                     <div>Total Saldo Semua Aplikasi: <span id="totalAppBalance">Rp 0</span></div>
@@ -225,7 +227,13 @@
             const dateTimeString = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
             document.getElementById('currentDateTime').value = dateTimeString;
         }
+        function checkLogin() {
+            if (!localStorage.getItem('loggedIn')) {
+                window.location.href = 'login.html';
+            }
+        }
 
+        checkLogin();
         setInterval(updateDateTime, 1000);
 
         let appBalances = [];
