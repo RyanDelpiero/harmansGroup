@@ -37,7 +37,7 @@
             color: #333;
         }
         .header img {
-            max-width: 150px; /* Sesuaikan ukuran logo */
+            max-width: 150px;
             margin-top: 10px;
         }
         .main-content {
@@ -130,24 +130,24 @@
                 padding: 8px;
             }
             .header {
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        .header button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #dc3545;
-            border: none;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .header button:hover {
-            background-color: #c82333;
-        }
+                text-align: center;
+                margin-bottom: 20px;
+                position: relative;
+            }
+            .header button {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                background-color: #dc3545;
+                border: none;
+                color: #fff;
+                padding: 10px 20px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .header button:hover {
+                background-color: #c82333;
+            }
         }
     </style>
 </head>
@@ -172,6 +172,8 @@
                     <div class="form-group">
                         <label for="initialCapital">Uang Modal:</label>
                         <input type="number" id="initialCapital" name="initialCapital" required>
+                        <label for="moneyIncome">Uang Pendapatan:</label>
+                        <input type="number" id="moneyIncome" name="moneyIncome" required>
                     </div>
                     <div class="form-group" id="appBalancesContainer">
                         <label for="appType">Jenis Aplikasi:</label>
@@ -224,11 +226,9 @@
                     <div>Nama Admin: <span id="displayAdminName"></span></div>
                     <br></br>
                     <div>Modal Saldo: <span id="initialCapitalBalance">Rp 0</span></div>
+                    <div>Uang Admin: <span id="RealMoneyAdmin">Rp 0</span></div>
                     <div>Uang Modal yang Harus Dikembalikan: <span id="returnedCapital">Rp 0</span></div>
-                    <div>Total Saldo Semua Aplikasi: <span id="totalAppBalance">Rp 0</span></div>
-                    <div>Total Saldo Transaksi Aplikasi: <span id="transactionApps">Rp 0</span></div>
                     <div>Uang Penjualan: <span id="salesMoney">Rp 0</span></div>
-                    <div>Uang Real: <span id="finalRealMoney">Rp 0</span></div>
                 </div>
             </div>
         </div>
@@ -237,154 +237,123 @@
     <script>
         function formatRupiah(value) {
             if (isNaN(value)) return 'Rp 0';
-            const numberString = Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            return `Rp ${numberString}`;
+            const numberString = Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            return 'Rp ' + numberString;
         }
 
-        function updateDateTime() {
-            const now = new Date();
-            const dateTimeString = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
-            document.getElementById('currentDateTime').value = dateTimeString;
-        }
         function logout() {
+            alert('Logout berhasil!');
             localStorage.removeItem('loggedIn');
             window.location.href = 'login.html';
-        }
-        function checkLogin() {
-            if (!localStorage.getItem('loggedIn')) {
-                window.location.href = 'login.html';
-            }
+            // Implementasikan logika logout di sini
         }
 
-        checkLogin();
-        setInterval(updateDateTime, 1000);
+        function getCurrentDateTime() {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false
+            };
+            return now.toLocaleDateString('id-ID', options);
+        }
 
-        let appBalances = [];
-
-        document.getElementById('appType').addEventListener('change', function() {
-            const appType = this.value;
-            if (appType === 'lainnya') {
-                document.getElementById('additionalAppContainer').style.display = 'block';
-                document.getElementById('cancellationNoteContainer').style.display = 'none';
-            } else if (appType === 'pembatalan') {
-                document.getElementById('cancellationNoteContainer').style.display = 'block';
-                document.getElementById('additionalAppContainer').style.display = 'none';
-            } else {
-                document.getElementById('additionalAppContainer').style.display = 'none';
-                document.getElementById('cancellationNoteContainer').style.display = 'none';
-            }
-        });
-
-        document.getElementById('addAppBalance').addEventListener('click', function() {
-            const appType = document.getElementById('appType').value;
-            const appBalance = parseFloat(document.getElementById('appBalance').value);
-            let appName = appType;
-            let note = '';
-
-            if (appType === 'lainnya') {
-                appName = document.getElementById('newAppName').value;
-                if (!appName) {
-                    alert('Silakan masukkan nama aplikasi baru.');
-                    return;
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('currentDateTime').value = getCurrentDateTime();
+            const salesForm = document.getElementById('salesForm');
+            const appType = document.getElementById('appType');
+            const additionalAppContainer = document.getElementById('additionalAppContainer');
+            const newAppName = document.getElementById('newAppName');
+            const cancellationNoteContainer = document.getElementById('cancellationNoteContainer');
+            const cancellationNote = document.getElementById('cancellationNote');
+            const appBalance = document.getElementById('appBalance');
+            const addAppBalance = document.getElementById('addAppBalance');
+            const appBalancesTable = document.getElementById('appBalancesTable').querySelector('tbody');
+            const appBalances = [];
+            
+            appType.addEventListener('change', () => {
+                if (appType.value === 'lainnya') {
+                    additionalAppContainer.style.display = 'block';
+                } else {
+                    additionalAppContainer.style.display = 'none';
                 }
-            } else if (appType === 'pembatalan') {
-                note = document.getElementById('cancellationNote').value;
-                if (!note) {
-                    alert('Silakan masukkan catatan pembatalan.');
-                    return;
-                }
-            }
-
-            if (isNaN(appBalance)) {
-                alert('Silakan masukkan saldo aplikasi yang valid.');
-                return;
-            }
-
-            appBalances.push({ appType: appName, balance: appBalance, note: note });
-            updateAppBalancesTable();
-            document.getElementById('appBalance').value = '';
-            document.getElementById('newAppName').value = '';
-            document.getElementById('cancellationNote').value = '';
-        });
-
-        function updateAppBalancesTable() {
-            const tbody = document.querySelector('#appBalancesTable tbody');
-            tbody.innerHTML = '';
-            appBalances.forEach((app, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${app.appType}</td>
-                    <td>${formatRupiah(app.balance)}</td>
-                    <td>${app.note}</td>
-                    <td><button type="button" onclick="editAppBalance(${index})">Edit</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function editAppBalance(index) {
-            const app = appBalances[index];
-            document.getElementById('appType').value = app.appType;
-            document.getElementById('appBalance').value = app.balance;
-            if (app.appType === 'lainnya') {
-                document.getElementById('newAppName').value = app.appType;
-                document.getElementById('additionalAppContainer').style.display = 'block';
-            } else if (app.appType === 'pembatalan') {
-                document.getElementById('cancellationNote').value = app.note;
-                document.getElementById('cancellationNoteContainer').style.display = 'block';
-            }
-            appBalances.splice(index, 1);
-            updateAppBalancesTable();
-        }
-
-        document.getElementById('salesForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const adminName = document.getElementById('adminName').value;
-            const initialCapital = parseFloat(document.getElementById('initialCapital').value);
-            let totalAppBalance = 0;
-            let totalTransaksi = 0;
-            let uangAdmin = 0;
-            let tarikTunai = 0;
-            let setorTunai = 0;
-            let saldoTerpakai = 0;
-            let sisasetor = 0;
-            let uangReal = 0;
-
-            appBalances.forEach(app => {
-                if (app.appType === 'bca' || app.appType === 'mitra' || app.appType === 'putra' || app.appType === 'digipos' || app.appType === 'klikoo' || app.appType === 'dana') {
-                    totalAppBalance += app.balance;
-                } else if (app.appType === 'totaltransaksi') {
-                    totalTransaksi = app.balance;
-                } else if (app.appType === 'uangadmin') {
-                    uangAdmin = app.balance;
-                } else if (app.appType === 'tariktunai') {
-                    tarikTunai = app.balance;
-                } else if (app.appType === 'setortunai') {
-                    setorTunai = app.balance;
-                } else if (app.appType === 'saldoTerpakai') {
-                    saldoTerpakai = app.balance;
-                } else if (app.appType === 'sisasetor') {
-                    sisasetor = app.balance;
-                } else if (app.appType === 'uangreal') {
-                    uangReal = app.balance;
+                
+                if (appType.value === 'pembatalan') {
+                    cancellationNoteContainer.style.display = 'block';
+                } else {
+                    cancellationNoteContainer.style.display = 'none';
                 }
             });
 
-            const uangModalDikembalikan = initialCapital - totalAppBalance;
-            const uangTransaksiAplikasi = totalTransaksi + uangAdmin - tarikTunai - setorTunai;
-            const uangPenjualan = uangTransaksiAplikasi + sisasetor + saldoTerpakai - uangModalDikembalikan;
-            const finalRealMoney = uangReal;
+            addAppBalance.addEventListener('click', () => {
+                const type = appType.value === 'lainnya' ? newAppName.value : appType.value;
+                const balance = parseFloat(appBalance.value);
+                const note = appType.value === 'pembatalan' ? cancellationNote.value : '';
 
-            document.getElementById('displayAdminName').innerText = adminName;
-            document.getElementById('totalAppBalance').innerText = formatRupiah(totalAppBalance);
-            document.getElementById('transactionApps').innerText = formatRupiah(uangTransaksiAplikasi);
-            document.getElementById('returnedCapital').innerText = formatRupiah(uangModalDikembalikan);
-            document.getElementById('initialCapitalBalance').innerText = formatRupiah(initialCapital);
-            document.getElementById('salesMoney').innerText = formatRupiah(uangPenjualan);
-            document.getElementById('finalRealMoney').innerText = formatRupiah(finalRealMoney);
+                if (type && !isNaN(balance)) {
+                    appBalances.push({ type, balance, note });
+                    updateAppBalancesTable();
+                }
+            });
+
+            function updateAppBalancesTable() {
+                appBalancesTable.innerHTML = '';
+                appBalances.forEach((app, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${app.type}</td>
+                        <td>${formatRupiah(app.balance)}</td>
+                        <td>${app.note}</td>
+                        <td><button onclick="removeAppBalance(${index})">Hapus</button></td>
+                    `;
+                    appBalancesTable.appendChild(row);
+                });
+            }
+
+            window.removeAppBalance = function(index) {
+                appBalances.splice(index, 1);
+                updateAppBalancesTable();
+            };
+
+            salesForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const adminName = document.getElementById('adminName').value;
+                const initialCapital = parseFloat(document.getElementById('initialCapital').value);
+                const moneyIncome = parseFloat(document.getElementById('moneyIncome').value);
+                let totalAppBalance = 0;
+                let uangAdmin = 0;
+                let sisasetor = 0;
+                let saldoterpakai = 0;
+
+                appBalances.forEach(app => {
+                    if (['bca', 'mitra', 'putra', 'digipos', 'klikoo', 'dana'].includes(app.type.toLowerCase())) {
+                        totalAppBalance += app.balance;
+                    }
+                    if (app.type.toLowerCase() === 'uangadmin') {
+                        uangAdmin += app.balance;
+                    }                    
+                    if (app.type.toLowerCase() === 'sisasetor') {
+                        sisasetor += app.balance;
+                    }
+                    if (app.type.toLowerCase() === 'saldoterpakai') {
+                        saldoterpakai += app.balance;
+                    }
+                });
+
+                const returnedCapital = initialCapital - totalAppBalance;
+                const salesMoney = moneyIncome + saldoterpakai + sisasetor - returnedCapital;
+
+                document.getElementById('displayAdminName').innerText = adminName;
+                document.getElementById('initialCapitalBalance').innerText = formatRupiah(initialCapital);
+                document.getElementById('RealMoneyAdmin').innerText = formatRupiah(uangAdmin);
+                document.getElementById('returnedCapital').innerText = formatRupiah(returnedCapital);
+                document.getElementById('salesMoney').innerText = formatRupiah(salesMoney);
+            });
         });
-
-        updateDateTime();
     </script>
 </body>
 </html>
