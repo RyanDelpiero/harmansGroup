@@ -182,16 +182,18 @@
                             <option value="totaltransaksi">Total Transaksi</option>
                             <option value="uangadmin">Uang Admin</option>
                             <option value="tariktunai">Tarik Tunai</option>
-                            <option value="saldoterpakai">Saldo Terpakai</option>
                             <option value="sisasetor">Sisa Setor</option>
+                            <option value="setortunai">Setor Tunai</option>
+                            <option value="uanglistrik">Bayar Listrik</option>
+                            <option value="uangwifi">Bayar Wifi</option>
+                            <option value="saldoterpakai">Uang Voucher</option>
+                            <option value="uangbarang">Bayar Barang</option>
                             <option value="bca">BCA</option>
                             <option value="mitra">Mitra</option>
                             <option value="putra">Putra</option>
                             <option value="digipos">Digipos</option>
                             <option value="klikoo">Klikoo</option>
                             <option value="dana">Dana</option>
-                            <option value="setortunai">Setor Tunai</option>
-<!--                             <option value="uangreal">Uang Real</option> -->
                             <option value="lainnya">Lainnya</option>
                             <option value="pembatalan">Pembatalan</option>
                         </select>
@@ -247,6 +249,14 @@
             window.location.href = 'login.html';
             // Implementasikan logika logout di sini
         }
+        function checkLogin() {
+            if (!localStorage.getItem('loggedIn')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        checkLogin();
+        setInterval(updateDateTime, 1000);
 
         function getCurrentDateTime() {
             const now = new Date();
@@ -325,9 +335,12 @@
                 const initialCapital = parseFloat(document.getElementById('initialCapital').value);
                 const moneyIncome = parseFloat(document.getElementById('moneyIncome').value);
                 let totalAppBalance = 0;
-                let uangAdmin = 0;
-                let sisasetor = 0;
-                let saldoterpakai = 0;
+                let uangAdmin       = 0;
+                let sisasetor       = 0;
+                let saldoterpakai   = 0;
+                let uanglistrik     = 0;
+                let uangwifi        = 0;
+                let uangbarang      = 0;
 
                 appBalances.forEach(app => {
                     if (['bca', 'mitra', 'putra', 'digipos', 'klikoo', 'dana'].includes(app.type.toLowerCase())) {
@@ -342,10 +355,19 @@
                     if (app.type.toLowerCase() === 'saldoterpakai') {
                         saldoterpakai += app.balance;
                     }
+                    if (app.type.toLowerCase() === 'uanglistrik') {
+                        uanglistrik += app.balance;
+                    }
+                    if (app.type.toLowerCase() === 'uangwifi') {
+                        uangwifi += app.balance;
+                    }
+                    if (app.type.toLowerCase() === 'uangbarang') {
+                        uangbarang += app.balance;
+                    }
                 });
 
                 const returnedCapital = initialCapital - totalAppBalance;
-                const salesMoney = moneyIncome + saldoterpakai + sisasetor - returnedCapital;
+                const salesMoney = moneyIncome + saldoterpakai + sisasetor + uangwifi + uanglistrik + uangbarang - returnedCapital;
 
                 document.getElementById('displayAdminName').innerText = adminName;
                 document.getElementById('initialCapitalBalance').innerText = formatRupiah(initialCapital);
