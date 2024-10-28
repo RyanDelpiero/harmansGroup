@@ -82,35 +82,24 @@
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
 
-        // Ambil daftar pengguna dari localStorage
-        //const users = JSON.parse(localStorage.getItem('users')) || [];
-        
-        if (username === 'admin' && password === 'admin' && role === 'admin') {
-            localStorage.setItem('loggedIn', true);
-            localStorage.setItem('role', 'admin');
-            window.location.href = 'admin_dashboard.html'; // Redirect ke halaman admin
-        } else if (username === 'harmans' && password === 'harmans123' && role === 'user') {
-            localStorage.setItem('loggedIn', true);
-            localStorage.setItem('role', 'user');
-            window.location.href = 'user_dashboard.html'; // Redirect ke halaman user
-        } else {
-            alert('Username, password, atau role salah.');
-        }
-        // Cek apakah ada pengguna yang cocok
-        const user = users.find(user => user.username === username && user.password === password);
-
-        if (user) {
-            localStorage.setItem('loggedIn', true);
-            localStorage.setItem('role', user.role); // Simpan role pengguna
-            window.location.href = 'index.html'; // Redirect ke halaman utama setelah login
-        } else {
-            alert('Username atau password salah.');
-        }
-    });
+            // Validasi login sederhana dengan username, password, dan role
+            if (username === 'admin' && password === 'admin' && role === 'admin') {
+                localStorage.setItem('loggedIn', true);
+                localStorage.setItem('role', 'admin');
+                window.location.href = 'admin_dashboard.html'; // Redirect ke halaman admin
+            } else if (username === 'harmans' && password === 'harmans123' && role === 'user') {
+                localStorage.setItem('loggedIn', true);
+                localStorage.setItem('role', 'user');
+                window.location.href = 'user_dashboard.html'; // Redirect ke halaman user
+            } else {
+                alert('Username, password, atau role salah.');
+            }
+        });
     </script>
 </body>
 </html>
