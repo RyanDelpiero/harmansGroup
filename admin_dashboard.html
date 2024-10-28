@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Kelola Pengguna</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6c63ff, #f3f4f6);
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .store-logo {
+        width: 150px;
+        height: auto;
+        margin: 20px auto; /* Menambahkan margin auto untuk meratakan logo */
+        display: block; /* Mengatur display menjadi block untuk meratakan di tengah */
+        animation: fadeIn 1s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+        h2 {
+            color: #555;
+            font-size: 1.5em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            color: #555;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input[type="text"], 
+        .form-group input[type="password"], 
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input[type="text"]:focus, 
+        .form-group input[type="password"]:focus, 
+        .form-group select:focus {
+            border-color:  #6c63ff, #3f3d56;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            color: #fff;
+            background: linear-gradient(135deg, #6c63ff, #3f3d56);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #3f3d56, #6c63ff);
+            transform: translateY(-2px);
+        }
+        .logout-btn {
+            background-color: #ff4b5c;
+            margin-top: 15px;
+        }
+        .logout-btn:hover {
+            background-color: #d43f50;
+        }
+        .form-container {
+            width: 45%;
+            margin-right: 20px;
+        }
+        .user-list {
+            width: 55%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden; /* Untuk menampilkan border-radius dengan baik */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #6c63ff;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+        .delete-btn {
+            background-color: #ff4b5c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background-color: #d43f50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="form-container">
+            <h1>Admin Dashboard</h1>
+            <img src="logo.png" alt="Logo Toko" class="store-logo">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+
+            <h2>Tambah Pengguna</h2>
+            <div class="form-group">
+                <label for="newUsername">Username:</label>
+                <input type="text" id="newUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="newPassword">Password:</label>
+                <input type="password" id="newPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="newRole">Role:</label>
+                <select id="newRole">
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+            </div>
+            <button onclick="addUser()">Tambah User</button>
+        </div>
+
+        <div class="user-list">
+            <h2>Daftar Pengguna</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- Daftar user akan diisi melalui JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function checkLoginStatus() {
+            const loggedIn = localStorage.getItem('loggedIn');
+            const role = localStorage.getItem('role');
+            
+            if (!loggedIn || role !== 'admin') {
+                alert("Anda harus login sebagai admin untuk mengakses halaman ini.");
+                window.location.href = 'login.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('role');
+            window.location.href = 'login.html';
+        }
+
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        function displayUsers() {
+            const userTableBody = document.getElementById('userTableBody');
+            userTableBody.innerHTML = ''; // Kosongkan tabel sebelum mengisi
+            
+            users.forEach((user, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>${user.role}</td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteUser(${index})">Hapus</button>
+                    </td>
+                `;
+                userTableBody.appendChild(row);
+            });
+        }
+
+        function addUser() {
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+            const role = document.getElementById('newRole').value;
+
+            if (username && password) {
+                users.push({ username: username, password: password, role: role });
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('User berhasil ditambahkan!');
+                displayUsers();
+                
+                document.getElementById('newUsername').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('newRole').value = 'user';
+            } else {
+                alert('Mohon isi semua kolom.');
+            }
+        }
+
+        function deleteUser(index) {
+            users.splice(index, 1);
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('User berhasil dihapus!');
+            displayUsers();
+        }
+
+        checkLoginStatus();
+        displayUsers();
+    </script>
+</body>
+</html>

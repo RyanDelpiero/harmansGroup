@@ -1,0 +1,51 @@
+1. Troubleshooting 
+ - Replicate issue
+ - Checking by issue
+ - Fixing issue
+ - Testing on Development & Production Environment (Staging) all channel (MyTelkomsel, WhatsApp, telkomsel.com, FB Messenger, Telegram dan LINE)
+2. Propose improvements to the source code Virtual Assistant
+ - Typo
+ - Spelling
+ - Customization greeting to support campaign product
+3. Deployment & Testing at Development & Production Environment
+ - Rewording & Image Promo, Change wording or image with running program
+ - Add keyword for NLU
+ - Create new model id with Data Training Virtual Assistant
+ - Add/drop/modify Bubble Chat & Button Option Intent
+ - Blasting Campaign promo VA on SMS
+ - Promotion Program
+ - Provide data keyword will be used on Synonym Product, checking by NLU dan subcategory product and then testing before & after
+ - Modify Intent & Flow VA request improvement according to customer feedback and experience
+ - Provide data reporting (Hit Keyword Promo, Buy Package, Bill Payment, Cashback, Data Active User, Integration User, Referral Code Program)
+ - Provide all evidence file before & after test
+ - Provide data KIP Pelanggan
+4. User Acceptance Testing (UAT) Sprint Development Virtual Assistant
+ - Create test scenario that include all positive and negative flows that user might experience
+ - Testing all intent which had previously been proposed to be changed, testing was carried out on Development Environment (Staging)
+5. Sanity Testing Sprint Development Virtual Assistant
+ - Create test scenario that include all positive and negative flows that user might experience
+ - Fixing Test all intent sprint carried out in the Production Environment, ensuring the sprint intent that has been carried out works and can be published to customers
+
+
+
+1. Dump, Insert and Processing Data to Mysql and Oracle Database
+2. Monitoring Data Customer Care Information System
+3. DB Admin
+4. Maintenance Server
+5. Policy and Security Server
+6. Integration Network MyGraPARI Machine
+7. Integration Content Management System on GraPARI Own All Region 
+8. Integration Smart Mirror Application
+9. Integration Queuing Machine GraPARI
+10. Operator PadBot Greeting and PadBot Video Call
+11. Develop SMS Engine
+
+
+
+Tools Department Management
+1. Dump, Insert and Processing Data to Mysql
+2. Monitoring Data Customer Care Information System
+
+
+Fasilities Tools Management
+Digital CTP & System Development Management
