@@ -221,22 +221,29 @@
         }
 
         function addUser() {
-            const username = document.getElementById('newUsername').value;
-            const password = document.getElementById('newPassword').value;
-            const role = document.getElementById('newRole').value;
+        const username = document.getElementById('newUsername').value;
+        const password = document.getElementById('newPassword').value;
+        const role = document.getElementById('newRole').value;
 
-            if (username && password) {
-                users.push({ username: username, password: password, role: role });
-                localStorage.setItem('users', JSON.stringify(users));
-                alert('User berhasil ditambahkan!');
-                displayUsers();
-                
-                document.getElementById('newUsername').value = '';
-                document.getElementById('newPassword').value = '';
-                document.getElementById('newRole').value = 'user';
-            } else {
-                alert('Mohon isi semua kolom.');
-            }
+        // Validasi input
+        if (!username || !password) {
+            alert("Username dan password harus diisi.");
+            return;
+        }
+
+        // Tambahkan user baru ke array users
+        users.push({ username, password, role });
+
+        // Simpan kembali ke localStorage
+        localStorage.setItem('users', JSON.stringify(users));
+
+        // Kosongkan input
+        document.getElementById('newUsername').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('newRole').value = 'user'; // Reset role ke default
+
+        displayUsers();
+        alert("Pengguna berhasil ditambahkan.");
         }
 
         function deleteUser(index) {
