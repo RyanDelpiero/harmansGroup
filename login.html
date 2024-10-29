@@ -96,6 +96,10 @@
                 localStorage.setItem('loggedIn', true);
                 localStorage.setItem('role', 'user');
                 window.location.href = 'user_dashboard.html'; // Redirect ke halaman user
+            } else if (user) {
+                localStorage.setItem('loggedIn', true);
+                localStorage.setItem('role', user.role); // Simpan role pengguna
+                window.location.href = 'user_dashboard.html'; // Redirect ke halaman utama setelah login
             } else {
                 alert('Username, password, atau role salah.');
             }
