@@ -78,19 +78,19 @@
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
 
-            // Ambil daftar pengguna dari localStorage
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-
-            // Cek apakah ada pengguna yang cocok
-            const user = users.find(user => user.username === username && user.password === password);
-
-            if (user) {
+            // Validasi login sederhana dengan username, password, dan role
+            if (username === 'admin' && password === 'admin' && role === 'admin') {
                 localStorage.setItem('loggedIn', true);
-                localStorage.setItem('role', user.role); // Simpan role pengguna
-                window.location.href = user.role === 'admin' ? 'admin_dashboard.html' : 'user_dashboard.html'; // Redirect ke halaman sesuai role
+                localStorage.setItem('role', 'admin');
+                window.location.href = 'admin_dashboard.html'; // Redirect ke halaman admin
+            } else if (username === 'harmans' && password === 'harmans123' && role === 'user') {
+                localStorage.setItem('loggedIn', true);
+                localStorage.setItem('role', 'user');
+                window.location.href = 'user_dashboard.html'; // Redirect ke halaman user
             } else {
-                alert('Username atau password salah.');
+                alert('Username, password, atau role salah.');
             }
         });
     </script>
